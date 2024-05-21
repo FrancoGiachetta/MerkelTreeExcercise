@@ -19,6 +19,7 @@ These kind of trees are built from the bottom, by concatenating the hashes of th
 ## Usage
 
 Use this command to run tests:
+
 ```rust
-  cargo test
+cargo test
 ```

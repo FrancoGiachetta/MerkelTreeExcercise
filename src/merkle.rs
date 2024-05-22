@@ -12,25 +12,27 @@ pub struct MerkleTree {
 
 impl MerkleTree {
     pub fn new(vec: Vec<&str>) -> Self {
-        let mut hash_vec: Vec<MerkleTree> = Self::to_hashed_leafs(vec);
-
-        for _i in 0..hash_vec.len() / 2{
-            let mut aux_merkle_vec: Vec<MerkleTree> = Vec::new();
+        // keeps track of the tree nodes during the building, starting with the leaves 
+        let mut merkle_tree: Vec<MerkleTree> = Self::to_hashed_leafs(vec);
+        
+        // loop through all the tree levels
+        for _i in 0..merkle_tree.len() / 2{
+            let mut aux_merkle_vec: Vec<MerkleTree> = Vec::new(); 
             
-            for j in (0..hash_vec.len()).step_by(2) {
-                let left_sub_tree = hash_vec.get(j).unwrap();
-                let right_sub_tree = hash_vec.get(j+1).unwrap();
+            for j in (0..merkle_tree.len()).step_by(2) {
+                let left_sub_tree = merkle_tree.get(j).unwrap();
+                let right_sub_tree = merkle_tree.get(j+1).unwrap();
 
                 aux_merkle_vec.push(Self::create_branch(left_sub_tree.clone(), right_sub_tree.clone()))
             }
 
-            hash_vec = aux_merkle_vec;
+            merkle_tree = aux_merkle_vec;
         }
         
-        hash_vec.remove(0)
+        merkle_tree.remove(0)
     }
 
-    fn create_node(hash: Hash) -> Self {
+    fn create_new_node(hash: Hash) -> Self {
         Self {
             root: hash,
             left_node: None,
@@ -55,7 +57,7 @@ impl MerkleTree {
         vec.into_iter().for_each(|value| {
             let hash = sha_hasher::get_hashed_value(value.as_bytes());
 
-            leafs_vec.push(Self::create_node(hash));
+            leafs_vec.push(Self::create_new_node(hash));
         });
 
         leafs_vec
